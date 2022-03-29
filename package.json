@@ -1,0 +1,15 @@
+{
+  "name": "sgw",
+  "version": "1.0.0",
+  "description": "Simple wrapper for google ad manager calls",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com-spiny:D17Team/simple-gam-wrapper.git"
+  },
+  "author": "",
+  "license": "ISC"
+}
