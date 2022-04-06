@@ -61,12 +61,21 @@ window.sgw = (function () {
 		const source = sources.shift();
 
 		if (isObject(target) && isObject(source)) {
+
 			for (const key in source) {
-				if (isObject(source[key])) {
-					if (!target[key]) Object.assign(target, { [key]: {} });
-					mergeDeep(target[key], source[key]);
-				} else {
-					Object.assign(target, { [key]: source[key] });
+				if (Object.hasOwnProperty.call(source, key)) {
+					if (isObject(source[key])) {
+						if (!target[key]) {
+							var tmpMrgDp = {};
+							tmpMrgDp[key] = {};
+							Object.assign(target, tmpMrgDp)
+						};
+						mergeDeep(target[key], source[key]);
+					} else {
+						var tmpMrgDp = {};
+						tmpMrgDp[key] = source[key];
+						Object.assign(target, tmpMrgDp);
+					}
 				}
 			}
 		}
@@ -310,10 +319,10 @@ window.sgw = (function () {
 	 * @memberof sgw
 	 * @private
 	 */
-	function bootstrap(){
-		window.googletag = window.googletag || {cmd:[]};
-		window.googletag.cmd.push(function(){
-			if(!googletag.pubads().isInitialLoadDisabled()){
+	function bootstrap() {
+		window.googletag = window.googletag || { cmd: [] };
+		window.googletag.cmd.push(function () {
+			if (!googletag.pubads().isInitialLoadDisabled()) {
 				googletag.pubads().disableInitialLoad();
 			}
 		})
