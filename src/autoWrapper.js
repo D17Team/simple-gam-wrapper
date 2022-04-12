@@ -193,7 +193,6 @@ const autoWrapper = (function(){
 		if(config.standardReferrer){
 			gamWrapper.setPageTargeting({referrer: formatReferrer(document.referrer)})
 		}
-		setPageTargetingFromPageData();
 		setUnits();
 		setGamPath();
 		const { refreshUnits, lazyLoadUnits, allUnits, unusedAdUnits } = getCurrentPageUnits();
