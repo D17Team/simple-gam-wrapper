@@ -1,38 +1,38 @@
 /**
  * Simple GAM Wrapper - A minimal/basic ad wrapper for Google Ad Manager / googletag
  * 
- * @namespace sgw
+ * @namespace gamWrapper
  */
-window.sgw = (function () {
+const gamWrapper = (function () {
 	/**
 	 * The configuration object for the wrapper
 	 *
 	 * @type {Object}
 	 * @private
-	 * @memberof sgw
+	 * @memberof gamWrapper
 	 */
-	var config = {};
+	let config = {};
 	/**
 	 * Object for tracking all unit configurations and their defined slots.
 	 *
 	 * @type {Object}
 	 * @private
-	 * @memberof sgw
+	 * @memberof gamWrapper
 	 */
-	var unitRegistry = {};
+	let unitRegistry = {};
 	/**
 	 * Flag for tracking whether services have been enabled or not.
 	 *
 	 * @type {Boolean}
 	 * @private
-	 * @memberof sgw
+	 * @memberof gamWrapper
 	 */
-	var googletagServicesEnabled = false;
+	let googletagServicesEnabled = false;
 	/**
 	 * Method setter for unit configurations
 	 *
 	 * @param {Object} newUnitConfigs
-	 * @memberof sgw
+	 * @memberof gamWrapper
 	 */
 	function setUnitConfigs(newUnitConfigs) {
 		unitRegistry = newUnitConfigs;
@@ -42,7 +42,7 @@ window.sgw = (function () {
 	* @param item
 	* @returns {boolean}
 	* @private
-	* @memberof sgw
+	* @memberof gamWrapper
 	*/
 	function isObject(item) {
 		return (item && typeof item === 'object' && !Array.isArray(item));
@@ -54,7 +54,7 @@ window.sgw = (function () {
 	* @param sources
 	* @private
 	* @returns {Object}
-	* @memberof sgw
+	* @memberof gamWrapper
 	*/
 	function mergeDeep(target, sources) {
 		if (!sources.length) return target;
@@ -87,11 +87,11 @@ window.sgw = (function () {
 	 *
 	 * @param {string|Object} unitId Object or id of the unit to get
 	 * @return {Object} 
-	 * @memberof sgw
+	 * @memberof gamWrapper
 	 */
 	function getUnit(unitId) {
-		var unitConfig = isObject(unitId) ? mergeDeep(unitRegistry[unitId.inherit], [unitId]) : unitRegistry[unitId]; // You can use lodash merge here or define your own merge function
-		var id = unitConfig.elementId || unitId;
+		const unitConfig = isObject(unitId) ? mergeDeep(unitRegistry[unitId.inherit], [unitId]) : unitRegistry[unitId]; // You can use lodash merge here or define your own merge function
+		const id = unitConfig.elementId || unitId;
 		if (!unitRegistry[unitConfig.elementId]) {
 			unitRegistry[unitConfig.elementId] = unitConfig;
 		}
@@ -126,16 +126,16 @@ window.sgw = (function () {
 	 * @param {Array<string|Object>} unitIds Array of unit ids or partial unit configurations to define
 	 * @return {Object[]} Google Tag Slots
 	 * @private
-	 * @memberof sgw
+	 * @memberof gamWrapper
 	 */
 	function defineSlots(unitIds) {
-		var resultSlots = [];
-		for (var index = 0; index < unitIds.length; index++) {
-			var unitId = isObject(unitIds[index]) ? unitIds[index].elementId : unitIds[index];
+		const resultSlots = [];
+		for (let index = 0; index < unitIds.length; index++) {
+			const unitId = isObject(unitIds[index]) ? unitIds[index].elementId : unitIds[index];
 			if (unitRegistry[unitId] && unitRegistry[unitId].slot) {
 				resultSlots.push(unitRegistry[unitId]);
 			} else {
-				var slotConfiguration = getUnit(unitIds[index]);
+				const slotConfiguration = getUnit(unitIds[index]);
 				if (slotConfiguration.element) {
 					if (slotConfiguration.outOfPage) {
 						unitRegistry[slotConfiguration.elementId].slot = googletag.defineOutOfPageSlot(config.gamPath, slotConfiguration.elementId);
@@ -147,14 +147,14 @@ window.sgw = (function () {
 					}
 					unitRegistry[slotConfiguration.elementId].slot.addService(window.googletag.pubads());
 					if (slotConfiguration.targeting) {
-						for (var key in slotConfiguration.targeting) {
+						for (const key in slotConfiguration.targeting) {
 							unitRegistry[slotConfiguration.elementId].slot.setTargeting(key, slotConfiguration.targeting[key]);
 						}
 					}
 					unitRegistry[slotConfiguration.elementId].slot = unitRegistry[slotConfiguration.elementId].slot;
 					resultSlots.push(unitRegistry[slotConfiguration.elementId].slot);
 				} else {
-					console.error('sgw: The element with id "' + slotConfiguration.elementId + '" does not exist. Cannot define slot.');
+					console.error('gamWrapper: The element with id "' + slotConfiguration.elementId + '" does not exist. Cannot define slot.');
 				}
 			}
 		}
@@ -170,18 +170,18 @@ window.sgw = (function () {
 	 * Displays slots on the page
 	 *
 	 * @param {Array<string|Object>} unitIds Array of unit ids or partial unit configurations to display
-	 * @memberof sgw
+	 * @memberof gamWrapper
 	 */
 	function displaySlots(unitIds) {
-		for (var index = 0; index < unitIds.length; index++) {
-			var unitId = unitIds[index];
-			var slotConfiguration = getUnit(unitId);
+		for (let index = 0; index < unitIds.length; index++) {
+			const unitId = unitIds[index];
+			const slotConfiguration = getUnit(unitId);
 			if (slotConfiguration.element) {
 				window.googletag.cmd.push(function () {
 					window.googletag.display(slotConfiguration.elementId);
 				});
 			} else {
-				console.error('sgw: The element with id "' + slotConfiguration.elementId + '" does not exist. Cannot display slot.');
+				console.error('gamWrapper: The element with id "' + slotConfiguration.elementId + '" does not exist. Cannot display slot.');
 			}
 		}
 	}
@@ -190,7 +190,7 @@ window.sgw = (function () {
 	 *
 	 * @param {Object[]} slots Array of google tag slots to refresh
 	 * @private
-	 * @memberof sgw
+	 * @memberof gamWrapper
 	 */
 	function refreshSlots(slots) {
 		window.googletag.pubads().refresh(slots);
@@ -199,11 +199,11 @@ window.sgw = (function () {
 	 * Method for setting page targeting
 	 *
 	 * @param {Object} targeting Object of targeting to set
-	* @memberof sgw
+	* @memberof gamWrapper
 	 */
 	function setPageTargeting(targeting) {
 		window.googletag.cmd.push(function () {
-			for (var key in targeting) {
+			for (const key in targeting) {
 				window.googletag.pubads().setTargeting(key, "" + targeting[key]);
 			}
 		});
@@ -212,11 +212,11 @@ window.sgw = (function () {
 	 * Implementation method to handle refreshing ads on page
 	 *
 	 * @param {Array<string|Object>} unitIds Array of unit ids or partial unit configurations to refresh
-	 * @memberof sgw
+	 * @memberof gamWrapper
 	 */
 	function refresh(unitIds) {
 		googletag.cmd.push(function () {
-			var refreshSlotsArr = defineSlots(unitIds);
+			const refreshSlotsArr = defineSlots(unitIds);
 			displaySlots(unitIds);
 			refreshSlots(refreshSlotsArr);
 		});
@@ -231,12 +231,12 @@ window.sgw = (function () {
 	 * @param {boolean|void} onPubads Whether the method is off of pubads or not.
 	 * @return {Function} Safely wrapped method.
 	 * @private
-	 * @memberof sgw
+	 * @memberof gamWrapper
 	 */
 	function wrapMethod(methodName, unitId, onPubads) {
 		return function () {
 			googletag.cmd.push(function () {
-				var base = unitId ? getUnit(unitId).slot : window.googletag;
+				const base = unitId ? getUnit(unitId).slot : window.googletag;
 				if (onPubads) {
 					base = base.pubads();
 				}
@@ -248,7 +248,7 @@ window.sgw = (function () {
 	 * Safely wrapped and normalized clear slots method
 	 *
 	 * @param {Array<string|Object>} unitIds Unit ids to clear
-	 * @memberof sgw
+	 * @memberof gamWrapper
 	 */
 	function clearSlots(unitIds) {
 		window.googletag.cmd.push(function () {
@@ -269,14 +269,14 @@ window.sgw = (function () {
 	 * NOTE: Only use this method if the ad element is deleted from the page and re-added. Otherwise, use clearSlots.
 	 *
 	 * @param {Array<string|Object>} unitIds
-	 * @memberof sgw
+	 * @memberof gamWrapper
 	 */
 	function destroySlots(unitIds) {
 		window.googletag.cmd.push(function () {
-			var resultSlots = [];
-			for (var index = 0; index < unitIds.length; index++) {
-				var unitId = unitIds[index];
-				var unitConfig = getUnit(unitId);
+			const resultSlots = [];
+			for (let index = 0; index < unitIds.length; index++) {
+				const unitId = unitIds[index];
+				const unitConfig = getUnit(unitId);
 				if (unitConfig.slot) {
 					resultSlots.push(unitConfig.slot);
 				}
@@ -290,7 +290,7 @@ window.sgw = (function () {
 	 *
 	 * @param {Array<string|Object>|void} unitIds Unit ids to get, or undefined to get all units
 	 * @return {Array<Object>} Array of unit configurations
-	 * @memberof sgw
+	 * @memberof gamWrapper
 	 */
 	function getUnits(unitIds) {
 		return unitIds ? unitIds.map(getUnit) : Object.keys(unitRegistry).map(getUnit);
@@ -299,7 +299,7 @@ window.sgw = (function () {
 	 * Method for setting the GAM Path for the page.
 	 *
 	 * @param {string} path GAM Path to set
-	 * @memberof sgw
+	 * @memberof gamWrapper
 	 */
 	function setConfig(newConfig) {
 		config = newConfig;
@@ -308,7 +308,7 @@ window.sgw = (function () {
 	 * Method for getting the GAM Path for the page.
 	 *
 	 * @return {string} The GAM Path for the page.
-	 * @memberof sgw
+	 * @memberof gamWrapper
 	 */
 	function getConfig() {
 		return config;
@@ -316,7 +316,7 @@ window.sgw = (function () {
 	/**
 	 * Boostrapping code for the page.
 	 *
-	 * @memberof sgw
+	 * @memberof gamWrapper
 	 * @private
 	 */
 	function bootstrap() {
@@ -345,3 +345,7 @@ window.sgw = (function () {
 		getConfig: getConfig
 	}
 })();
+
+window.sgw = window.sgw || gamWrapper;
+
+export default gamWrapper;

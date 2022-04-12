@@ -10,13 +10,13 @@
 			async
 			src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"
 		></script>
-		<script src="./index.js"></script>
+		<script src="./dist/sgw.bundle.js"></script>
 	</head>
 	<body class="lightMode">
 		<div class="container">
-			<div class="ad-container">
-				<div class="ad" id="ad-top"></div>
-				<div class="ad" id="mobile-ad-top"></div>
+			<div class="ad-container leaderboard">
+				<div class="ad desktop-ad" id="ad-top"></div>
+				<div class="ad mobile-ad" id="mobile-ad-top"></div>
 			</div>
 			<h1>Simple GAM Wrapper(SGW.js) Example Page</h1>
 			<div class="button-container">
@@ -158,9 +158,9 @@ sgw.refresh(unitsToRefresh);
 					</code>
 				</pre>
 			</details>
-			<div class="ad-container in-content">
-				<div class="ad" id="ad-in-content"></div>
-				<div class="ad" id="mobile-ad-in-content"></div>
+			<div class="ad-container in-content standard">
+				<div class="ad desktop-ad" id="ad-in-content"></div>
+				<div class="ad mobile-ad" id="mobile-ad-in-content"></div>
 			</div>
 			<h2>Rest of example page</h2>
 			<p>
@@ -246,9 +246,9 @@ sgw.refresh(unitsToRefresh);
 				later, Dr. Jekyll had returned to his own shape and was sitting
 				down, with a darkened brow, to make a feint of breakfasting.
 			</p>
-			<div class="ad-container in-content">
-				<div class="ad" id="ad-in-content2"></div>
-				<div class="ad" id="mobile-ad-in-content2"></div>
+			<div class="ad-container in-content standard">
+				<div class="ad desktop-ad" id="ad-in-content2"></div>
+				<div class="ad mobile-ad" id="mobile-ad-in-content2"></div>
 			</div>
 			<p>
 				Small indeed was my appetite. This inexplicable incident, this
@@ -276,9 +276,9 @@ sgw.refresh(unitsToRefresh);
 				better self, and becoming slowly incorporated with my second and
 				worse.
 			</p>
-			<div class="ad-container">
-				<div class="ad" id="ad-bottom"></div>
-				<div class="ad" id="mobile-ad-bottom"></div>
+			<div class="ad-container leaderboard">
+				<div class="ad desktop-ad" id="ad-bottom"></div>
+				<div class="ad mobile-ad" id="mobile-ad-bottom"></div>
 			</div>
 		</div>
 		<script>
@@ -351,6 +351,7 @@ sgw.refresh(unitsToRefresh);
 			// Tells SGW.js what unit configurations you have.
 			sgw.setUnitConfigs(slotConfigs);
 			// gamPath Required. Please contact your ad operations manager to get this.
+			// USE YOUR OWN GAM PATH.
 			sgw.setConfig({
 				gamPath: "/22235064382/example/article",
 			});

@@ -1,0 +1,89 @@
+.sgw-container {
+	position: relative;
+	width: 100%;
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: center;
+	align-items: center;
+	transition: all .05s ease-in-out;
+}
+
+.sgw-container:not(.sgw-unused) {
+	margin: 1em auto;
+	padding-top: 1em;
+	padding-bottom: 1em;
+	min-height: 3em;
+}
+
+.sgw-container:not(.sgw-unused):before, .sgw-container:not(.sgw-unused):after {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	z-index: 0;
+	content: "";
+}
+
+.sgw-container:not(.sgw-unused):before {
+	content: "Ad";
+	background-color: #f8f8f8;
+	color: #ddd;
+	font-weight: 700;
+	font-size: 12px;
+}
+.sgw-container.sgw-blocked:before {
+	color: #ededed;
+	font-size: 4rem;
+}
+.sgw-container.sgw-blocked:after {
+	content: "Please support us by disabling your ad blocker";
+	color: #888;
+	font-weight: 700;
+	font-size: 14px;
+	z-index: 1;
+	text-align: center;
+}
+
+.sgw-container.sgw-blocked:before {
+	/* content: "Please support us by disabling your ad blocker"; */
+}
+
+.sgw-adhesion {
+	position: fixed;
+	left: 0;
+	right: 0;
+	z-index: 10;
+	top: calc(100% - 90px);
+}
+
+.sgw-adhesion.mobile {
+	top: calc(100% - 50px);
+}
+
+.sgw-adhesion .sgw-container {
+	margin: 0 auto;
+	padding: 0;
+}
+
+.sgw-container > * {
+	z-index: 2;
+}
+.sgw-container.sgw-blocked > *{
+	display: block !important;
+}
+
+@supports (position: sticky){
+	.sgw-sidebar-outer {
+		position: relative;
+	}
+	.sgw-sidebar-inner {
+		position: sticky;
+		top: 0;
+	}
+}

@@ -59,18 +59,17 @@ body.lightMode {
 	border-color: #bbb;
 	filter: none;
 }
-.ad:not(:empty) {
+.ad {
 	margin: 0 auto;
 	text-align: center;
 	width: auto;
-	display: inline-flex;
-	flex: 0 0 auto;
+	display: flex;
 	padding: 8px;
 	position: relative;
 	min-width: 300px;
 	min-height: calc(16px + 1.1em);
 }
-.ad:not(:empty):before {
+.ad-container:before {
 	position: absolute;
 	/* Prior and during ad loading we display 'Ad' to indicate the space is reserved for an ad */
 	content: "Ad";
@@ -89,7 +88,10 @@ body.lightMode {
 	background-color: var(--color-shadow);
 	color: var(--color-text-secondary);
 }
-body.adsProcessed .ad:not(:empty):not(.empty):before {
+.ad-container > * {
+	z-index: 1;
+}
+body.adsProcessed .ad-container:before {
 	/* If an ad didn't load this might indicate that the user 
 			has an ad blocker so this text would then be displayed.
 			If a blank ad loads this would also be displayed */
@@ -98,6 +100,7 @@ body.adsProcessed .ad:not(:empty):not(.empty):before {
 .ad-container {
 	text-align: center;
 	display: block;
+	position: relative;
 	max-width: 100%;
 }
 @media screen and (min-width: 1024px) {
@@ -106,5 +109,30 @@ body.adsProcessed .ad:not(:empty):not(.empty):before {
 		margin-left: 18px;
 		margin-top: 1em;
 		clear: both;
+	}
+}
+
+.mobile-ad {
+	display: inline-flex !important;
+}
+.leaderboard {
+	min-height: 50px;
+}
+.standard {
+	min-height: 250px;
+	min-width: 300px;
+}
+.desktop-ad:empty {
+	display: none !important;
+}
+@media screen and (min-width: 1024px) {
+	.leaderboard {
+		min-height: 90px;
+	}
+	.ad.desktop-ad {
+		display: inline-flex !important;
+	}
+	.ad.mobile-ad:empty {
+		display: none !important;
 	}
 }

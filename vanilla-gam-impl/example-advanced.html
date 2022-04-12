@@ -20,9 +20,9 @@
 	</head>
 	<body class="lightMode">
 		<div class="container">
-			<div class="ad-container">
-				<div class="ad" id="ad-top"></div>
-				<div class="ad" id="mobile-ad-top"></div>
+			<div class="ad-container leaderboard">
+				<div class="ad desktop-ad" id="ad-top"></div>
+				<div class="ad mobile-ad" id="mobile-ad-top"></div>
 			</div>
 			<h1>Advanced GAM Ads Example Page</h1>
 			<div class="button-container">
@@ -69,9 +69,9 @@
 				fate.
 			</p>
 			
-			<div class="ad-container in-content">
-				<div class="ad" id="ad-in-content"></div>
-				<div class="ad" id="mobile-ad-in-content"></div>
+			<div class="ad-container in-content standard">
+				<div class="ad desktop-ad" id="ad-in-content"></div>
+				<div class="ad mobile-ad" id="mobile-ad-in-content"></div>
 			</div>
 			<p>
 				Some two months before the murder of Sir Danvers, I had been out for
@@ -118,9 +118,9 @@
 				later, Dr. Jekyll had returned to his own shape and was sitting
 				down, with a darkened brow, to make a feint of breakfasting.
 			</p>
-			<div class="ad-container in-content">
-				<div class="ad" id="ad-in-content2"></div>
-				<div class="ad" id="mobile-ad-in-content2"></div>
+			<div class="ad-container in-content standard">
+				<div class="ad desktop-ad" id="ad-in-content2"></div>
+				<div class="ad mobile-ad" id="mobile-ad-in-content2"></div>
 			</div>
 			<p>
 				Small indeed was my appetite. This inexplicable incident, this
@@ -148,9 +148,9 @@
 				better self, and becoming slowly incorporated with my second and
 				worse.
 			</p>
-			<div class="ad-container">
-				<div class="ad" id="ad-bottom"></div>
-				<div class="ad" id="mobile-ad-bottom"></div>
+			<div class="ad-container leaderboard">
+				<div class="ad desktop-ad" id="ad-bottom"></div>
+				<div class="ad mobile-ad" id="mobile-ad-bottom"></div>
 			</div>
 		</div>
 		<script>
@@ -235,6 +235,7 @@
 	},
 }
 			// gamPath Required. Please contact your ad operations manager to get this.
+			// USE YOUR OWN GAM PATH.
 			var gamPath = "/22235064382/example/article";
 			var pageType = "article";
 			var device = isMobile ? "mobile" : "desktop";
