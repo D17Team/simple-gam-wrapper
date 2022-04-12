@@ -182,6 +182,7 @@ const autoWrapper = (function(){
 			...config,
 			...passedConfig
 		};
+		console.log("Ads: initializing", config);
 		lazyLoadObserver = new IntersectionObserver(
 			lazyLoadAd,
 			config.lazyLoadOptions
