@@ -11,14 +11,6 @@ import "./autoWrapper.css";
  */
 const autoWrapper = (function(){
 	/**
-	 * Page data object
-	 *
-	 * @type {object}
-	 * @memberof autoWrapper
-	 * @private
-	 */
-	let pageData = {};
-	/**
 	 * Configuration for ads on site
 	 *
 	 * @type {object}
@@ -27,6 +19,9 @@ const autoWrapper = (function(){
 	 */
 	let config = {
 		reserveSpace: false,
+		standardReferrer: true,
+		applyClasses: false,
+		lazyLoadOptions: { rootMargin: '500px 0px', threshold: 0.01 }
 	}
 	/**
 	 * Object tracking auctioned units to allow detection of newly added units.
@@ -66,37 +61,13 @@ const autoWrapper = (function(){
 		'970x90': 6
 	}
 	/**
-	 * Set page targeting form page data
-	 *
-	 * @memberof autoWrapper
-	 * @private
-	 */
-	function setPageTargetingFromPageData(){
-			gamWrapper.setPageTargeting({
-				ptype: pageData.pageType,
-				hitId: pageData.hitId,
-				sessionId: pageData.sessionId,
-				clientId: pageData.clientId,
-				referrer: formatReferrer(document.referrer),
-				section: pageData.section
-			})
-			if(pageData.contentId){
-				gamWrapper.setPageTargeting({
-					contentId:pageData.contentId,
-					authorName:pageData.authorName,
-					authorId:pageData.authorId,
-					keywords:pageData.keywords
-				})
-			}
-	}
-	/**
 	 * Sets unit configs on gamWrapper
 	 *
 	 * @memberof autoWrapper
 	 * @private
 	 */
 	function setUnits(){
-		gamWrapper.setUnitConfigs(pageData.adUnits);
+		gamWrapper.setUnitConfigs(config.adUnits);
 	}
 	/**
 	 * Sets the page GAM Path
@@ -105,9 +76,13 @@ const autoWrapper = (function(){
 	 * @private
 	 */
 	function setGamPath(){
-		gamWrapper.setConfig({
-			gamPath: isMobile() ? pageData.mobileGamPath : pageData.desktopGamPath
-		})
+		if(config.gamPath){
+			gamWrapper.setConfig({ gamPath: config.gamPath });
+		} else if(config.mobileGamPath && config.desktopGamPath){
+			gamWrapper.setConfig({
+				gamPath: isMobile() ? config.mobileGamPath : config.desktopGamPath
+			})
+		}
 	}
 	/**
 	 * Method for handling class application to elements
@@ -202,17 +177,22 @@ const autoWrapper = (function(){
 	 *
 	 * @memberof autoWrapper
 	 */
-	function init(passedConfig){
-		config = passedConfig;
-		pageData = config.pageData || window.dataObj;
+	function init(passedConfig = {}){
+		config = {
+			...config,
+			...passedConfig
+		};
 		lazyLoadObserver = new IntersectionObserver(
 			lazyLoadAd,
-			config.lazyLoadOptions || { rootMargin: '500px 0px', threshold: 0.01 }
+			config.lazyLoadOptions
 		)
-		if(!pageData){
-			throw new Error("Ads: Page Data(window.dataObj) does not exist.");
-		}
 		setupEventListeners();
+		if(config.pageTargeting){
+			gamWrapper.setPageTargeting(config.pageTargeting);
+		}
+		if(config.standardReferrer){
+			gamWrapper.setPageTargeting({referrer: formatReferrer(document.referrer)})
+		}
 		setPageTargetingFromPageData();
 		setUnits();
 		setGamPath();
