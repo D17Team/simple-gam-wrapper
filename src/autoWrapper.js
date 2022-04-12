@@ -85,8 +85,7 @@ const autoWrapper = (function(){
 					contentId:pageData.contentId,
 					authorName:pageData.authorName,
 					authorId:pageData.authorId,
-					keywords:pageData.keywords,
-					testValue:pageData.testValue
+					keywords:pageData.keywords
 				})
 			}
 	}
