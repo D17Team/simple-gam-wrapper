@@ -2,6 +2,7 @@ import isMobile from "./utils/mobile";
 import { formatReferrer } from "./utils/url";
 import gamWrapper from "./gamWrapper";
 import { getCurrentPageUnits } from "./getUnits";
+import { kebabCase } from "./utils/str";
 import "./autoWrapper.css";
 /**
  * Ads implementation
@@ -173,11 +174,46 @@ const autoWrapper = (function(){
 		})
 	}
 	/**
+	 * Method for attempting to fetch wordpress author data
+	 *
+	 * @memberof autoWrapper
+	 * @private
+	 */
+	async function tryWpAuthorFetch(){
+		const wpApiLinkEl = window.document.querySelector("link[rel='alternate'][href*='wp-json']");
+		if(wpApiLinkEl){
+			const wpApiLink = wpApiLinkEl.href;
+			try {
+				console.log("Ads: Author data not given. Trying to fetch author data from wordpress.");
+				const wpApiResponse = await fetch(wpApiLink);
+				const wpApiData = await wpApiResponse.json();
+				if(wpApiData && wpApiData.id){
+					config.pageTargeting.contentId = '' + wpApiData.id;
+				}
+				config.pageTargeting.authorId = '' + wpApiData.author;
+				if(wpApiData.author_info){
+					config.pageTargeting.authorName = kebabCase(wpApiData.author_info.display_name);
+				} else if(wpApiData.yoast_head_json && wpApiData.yoast_head_json.schema){
+					const graphAuthor = wpApiData.yoast_head_json.schema['@graph'].find(v => v['@type'] === 'Person');
+					if(graphAuthor){
+						config.pageTargeting.authorName = kebabCase(graphAuthor.name);
+					}
+				}
+				console.log("Ads: Author data fetched from wordpress.", config.pageTargeting, wpApiData);
+				gamWrapper.setPageTargeting(config.pageTargeting);
+				window.SGW_AUTO.config = config;
+			} catch (err) {
+				console.error("Ads: Failed to retrieve WP-API details", err);
+			}
+		}
+	}
+	/**
 	 * Initializes all ads processes
 	 *
 	 * @memberof autoWrapper
 	 */
-	function init(passedConfig = {}){
+	async function init(passedConfig = {}){
+		window.SGW_AUTO = {config:{}};
 		config = {
 			...config,
 			...passedConfig
@@ -188,6 +224,11 @@ const autoWrapper = (function(){
 			config.lazyLoadOptions
 		)
 		setupEventListeners();
+		config.pageType = config.pageType || config.pageTargeting.ptype || 'article';
+		
+		if(config.pageType === 'article' && (!config.pageTargeting || config.pageTargeting.authorId === '' || !config.pageTargeting.contentId === '')){
+			await tryWpAuthorFetch();
+		}
 		if(config.pageTargeting){
 			gamWrapper.setPageTargeting(config.pageTargeting);
 		}
@@ -196,6 +237,16 @@ const autoWrapper = (function(){
 		}
 		setUnits();
 		setGamPath();
+		applyClasses({
+			add: ['sgw-ptype-' + config.pageType]
+		}, window.document.body)
+		window.SGW_AUTO.config = {
+			...config,
+			pageTargeting: {
+				...(window.SGW_AUTO.config.pageTargeting || {}),
+				...(config.pageTargeting || {}),
+			}
+		};
 		const { refreshUnits, lazyLoadUnits, allUnits, unusedAdUnits } = getCurrentPageUnits();
 		postProcessUnits(refreshUnits, lazyLoadUnits, allUnits, unusedAdUnits);
 	}
@@ -206,7 +257,7 @@ const autoWrapper = (function(){
 	 * @memberof autoWrapper
 	 */
 	function refresh(units){
-		const {refreshUnits, lazyLoadUnits, allUnits, unusedAdUnits } = getCurrentPageUnits();
+		const {refreshUnits, lazyLoadUnits, allUnits, unusedAdUnits } = getCurrentPageUnits(config.adUnits, {pageType: config.pageType});
 		const omitNonNewUnits = unit => units.indexOf(unit.elementId) > -1 || (unit.dynamic && !auctionedUnits[unit.elementId])
 		const newRefreshUnits = refreshUnits.filter(omitNonNewUnits).map(unit => {
 			if(unit.pageTargeting){

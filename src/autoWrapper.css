@@ -86,4 +86,8 @@
 		position: sticky;
 		top: 0;
 	}
+
+	#leaders2021 .sgw-sidebar-inner {
+		top: 90px;
+	}
 }

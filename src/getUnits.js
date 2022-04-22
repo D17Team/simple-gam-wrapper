@@ -1,5 +1,4 @@
 import isMobile from "./utils/mobile";
-
 /**
  * Function to filter out ad units based on device, element existence, and page type
  *
@@ -7,14 +6,15 @@ import isMobile from "./utils/mobile";
  * @return {boolean} whether ad is compatible with current page
  */
 function adFilterFunction(unit){
-	const adUnitObj = typeof unit === "string" ? window.dataObj.adUnits[unit] : unit;
-	const adFilterResult = (typeof adUnitObj.pageTypes === "undefined" || adUnitObj.pageTypes.indexOf(window.dataObj.pageType) > -1)
+	const sgwConfig = window.SGW_AUTO.config;
+	const adUnitObj = typeof unit === "string" ? sgwConfig.adUnits[unit] : unit;
+	const adFilterResult = (typeof adUnitObj.pageTypes === "undefined" || adUnitObj.pageTypes.indexOf(sgwConfig.pageType) > -1)
 		&& (typeof adUnitObj.devices === "undefined" || adUnitObj.devices.indexOf(isMobile() ? 'mobile' : 'desktop') > -1)
 		&& document.getElementById(adUnitObj.elementId || adUnitObj.name)
 		&& adUnitObj.sizes.length >= 1;
 	if(!adFilterResult && window.location.href.indexOf('ad-debug') > -1){
 		console.log("Ads: Excluding ad unit", adUnitObj, {
-			matchesPageType: (typeof adUnitObj.pageTypes === "undefined" || adUnitObj.pageTypes.indexOf(window.dataObj.pageType) > -1),
+			matchesPageType: (typeof adUnitObj.pageTypes === "undefined" || adUnitObj.pageTypes.indexOf(sgwConfig.pageType) > -1),
 			matchesDevice: (typeof adUnitObj.devices === "undefined" || adUnitObj.devices.indexOf(isMobile() ? 'mobile' : 'desktop') > -1),
 			hasElement: document.getElementById(adUnitObj.elementId || adUnitObj.name),
 			hasSizes: adUnitObj.sizes.length >= 1
@@ -30,17 +30,18 @@ function adFilterFunction(unit){
  */
 function processConfig(unit){
 	let adUnitObj = unit;
+	const sgwConfig = window.SGW_AUTO.config;
 	if(typeof unit === "string"){
-		adUnitObj = window.dataObj.adUnits[unit];
+		adUnitObj = sgwConfig.adUnits[unit];
 	} else if(typeof unit === "object" && typeof unit.inherit === "string"){
-		adUnitObj = {...window.dataObj.adUnits[unit.inherit], ...unit};
+		adUnitObj = {...sgwConfig.adUnits[unit.inherit], ...unit};
 	}
 	// If element id is not set, set it to the unit name
 	if(!adUnitObj.elementId){
 		adUnitObj.elementId = adUnitObj.name;
 	}
 	adUnitObj.element = document.getElementById(adUnitObj.elementId);
-	adUnitObj.designation = window.dataObj.adUnits[adUnitObj.elementId] ? adUnitObj.elementId : adUnitObj;
+	adUnitObj.designation = sgwConfig.adUnits[adUnitObj.elementId] ? adUnitObj.elementId : adUnitObj;
 	if(adUnitObj.element && adUnitObj.element.dataset){
 		const datasetToMerge = Object.assign({}, adUnitObj.element.dataset);
 		if(datasetToMerge.targeting){
@@ -56,8 +57,8 @@ function processConfig(unit){
 		delete adUnitObj.adUnit;
 	}
 	// Apply page type overrides
-	if(adUnitObj.pageTypeOverrides && adUnitObj.pageTypeOverrides[window.dataObj.pageType]){
-		adUnitObj = Object.assign(adUnitObj, adUnitObj.pageTypeOverrides[window.dataObj.pageType]);
+	if(adUnitObj.pageTypeOverrides && adUnitObj.pageTypeOverrides[sgwConfig.pageType]){
+		adUnitObj = Object.assign(adUnitObj, adUnitObj.pageTypeOverrides[sgwConfig.pageType]);
 	}
 	if(adUnitObj.element){
 		const parentNodeWidth = adUnitObj.element.parentNode.offsetWidth;
@@ -102,7 +103,7 @@ function elementTopSort(a, b){
  * @return {object} Lazy loaded and nonlazy loaded ad units
  */
 export function getCurrentPageUnits(){
-	const configuredUnits = Object.keys(window.dataObj.adUnits);
+	const configuredUnits = Object.keys(window.SGW_AUTO.config.adUnits);
 	const dynamicUnits = Array.from(document.querySelectorAll('[data-ad-unit]')).map(function(el){
 		let elId = el.id;
 		if(!elId){
