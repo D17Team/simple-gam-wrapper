@@ -193,7 +193,9 @@ const gamWrapper = (function () {
 	 * @memberof gamWrapper
 	 */
 	function refreshSlots(slots) {
-		window.googletag.pubads().refresh(slots);
+		if(slots.length > 0) {
+			window.googletag.pubads().refresh(slots);
+		}
 	}
 	/**
 	 * Method for setting page targeting

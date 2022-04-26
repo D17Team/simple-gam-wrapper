@@ -1,0 +1,6 @@
+# Supported Browsers
+# Repo: https://github.com/browserslist/browserslist
+
+defaults
+last 2 major versions
+> 2%
