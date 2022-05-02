@@ -229,11 +229,12 @@ const autoWrapper = (function(){
 		if(config.pageType === 'article' && (!config.pageTargeting || config.pageTargeting.authorId === '' || !config.pageTargeting.contentId === '')){
 			await tryWpAuthorFetch();
 		}
+		if(config.standardReferrer){
+			config.pageTargeting.referrer = formatReferrer(document.referrer);
+		}
 		if(config.pageTargeting){
 			gamWrapper.setPageTargeting(config.pageTargeting);
-		}
-		if(config.standardReferrer){
-			gamWrapper.setPageTargeting({referrer: formatReferrer(document.referrer)})
+			setGoogleAnalyticsDimensions(config.pageTargeting);
 		}
 		setUnits();
 		setGamPath();
@@ -251,6 +252,32 @@ const autoWrapper = (function(){
 		postProcessUnits(refreshUnits, lazyLoadUnits, allUnits, unusedAdUnits);
 	}
 	/**
+	 * Method to automatically apply google analytics dimensions based on mapping
+	 *
+	 * @param {*} sourceObj Source object with key/values to map
+	 * @param {*} map Map object mapping dimensions to keys
+	 * @memberof autoWrapper
+	 * @private
+	 */
+	function setGoogleAnalyticsDimensions(sourceObj, map){
+		if(typeof window.ga !== "function"){
+			return;
+		}
+		let _map = map;
+		if(!_map){
+			_map = window.SGW_AUTO.config.gaDimensions;
+		}
+		console.log("Ads: Setting GA dimensions", sourceObj, _map);
+		for (const dimension in map) {
+			if (Object.hasOwnProperty.call(map, dimension)) {
+				const sourceKey = map[dimension];
+				if(sourceObj[sourceKey]){
+					ga('set', dimension, sourceObj[sourceKey]);
+				}
+			}
+		}
+	}
+	/**
 	 * Method for refreshing new units on the page for infinite scroll situations
 	 *
 	 * @param {Array<string|object>} units
@@ -262,6 +289,7 @@ const autoWrapper = (function(){
 		const newRefreshUnits = refreshUnits.filter(omitNonNewUnits).map(unit => {
 			if(unit.pageTargeting){
 				gamWrapper.setPageTargeting(unit.pageTargeting);
+				setGoogleAnalyticsDimensions(unit.pageTargeting);
 			}
 			return unit.designation
 		});
@@ -281,6 +309,7 @@ const autoWrapper = (function(){
 		gamWrapper.refresh(refreshUnits.map(unit => {
 			if(unit.pageTargeting){
 				gamWrapper.setPageTargeting(unit.pageTargeting);
+				setGoogleAnalyticsDimensions(unit.pageTargeting);
 			}
 			return unit.designation;
 		}));
@@ -347,6 +376,7 @@ const autoWrapper = (function(){
 				console.log("Ads: Refreshing ad unit", adUnit);
 				if(adUnit.pageTargeting){
 					gamWrapper.setPageTargeting(adUnit.pageTargeting);
+					setGoogleAnalyticsDimensions(adUnit.pageTargeting);
 				}
 				gamWrapper.refresh([adUnit.designation]);
 				lazyLoadObserver.unobserve(entry.target);
